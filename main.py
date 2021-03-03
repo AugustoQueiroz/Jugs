@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(
     )
 parser.add_argument('-s', '--sizes', nargs='+', type=int, dest='sizes', required=True, help='The size limits for each jugs')
 parser.add_argument('-i', '--initial_distribution', nargs='+', type=int, dest='distribution', required=True, help='The initial distribution')
-parser.add_argument('-g', '--goal', nargs='+', type=int, dest='goal', required=True, help='The desired distribution to reach')
+parser.add_argument('-g', '--goal', nargs='+', type=int, dest='goal', help='The desired distribution to reach')
 
 parser.add_argument('-v', '--visualize_graph', action='store_true', dest='make_vis', help='Create a visualization of the entire graph of possibilities')
 
@@ -65,7 +65,7 @@ def search(graph, start_node, end_node):
 def create_graphviz(graph):
     dot = Digraph()
     for vertex in graph:
-        dot.node(str(dot))
+        dot.node(str(vertex))
     
     for vertex in graph:
         for neighbour in graph[vertex]:
@@ -91,7 +91,10 @@ if __name__ == '__main__':
     if args.make_vis:
         create_graphviz(graph)
     
-    solution = search(graph, c, Configuration(args.goal, args.sizes))
-    for node in solution[:-1]:
-        print(f'{node}->', end='')
-    print(f'{solution[-1]}')
+    if args.goal is not None:
+        goal = Configuration(args.goal, args.sizes)
+        print(f'Shortest solution for getting from {str(c)} to {str(goal)}')
+        solution = search(graph, c, goal)
+        for node in solution[:-1]:
+            print(f'{node}->', end='')
+        print(f'{solution[-1]}')
